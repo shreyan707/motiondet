@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIGIL | Security Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030712;
+            --surface: rgba(17, 24, 39, 0.7);
+            --primary: #06b6d4;
+            --primary-glow: rgba(6, 182, 212, 0.4);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.06), transparent 30%),
+                radial-gradient(circle at 85% 30%, rgba(239, 68, 68, 0.04), transparent 30%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Abstract Grid */
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3.5rem;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--danger), transparent);
+            opacity: 0.8;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .brand-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(6, 182, 212, 0.08);
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--primary-glow);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.6); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(6, 182, 212, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .event-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .event-box::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .event-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .event-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        /* Jinja conditional styling logic via template classes */
+        .status-safe {
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .status-alert {
+            color: var(--danger);
+            text-shadow: 0 0 20px var(--danger-glow);
+            animation: text-pulse 3s infinite alternate;
+        }
+        
+        .pulse-alert .dot {
+            background-color: var(--danger);
+            box-shadow: 0 0 8px var(--danger-glow);
+            animation: alert-pulse 1s infinite !important;
+        }
+        
+        @keyframes alert-pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        @keyframes text-pulse {
+            0% { opacity: 0.8; text-shadow: 0 0 15px var(--danger-glow); }
+            100% { opacity: 1; text-shadow: 0 0 30px var(--danger-glow); }
+        }
+
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            opacity: 0.5;
+        }
+        
+        .info-value {
+            color: #cbd5e1;
+        }
+    </style>
+    <meta http-equiv="refresh" content="5">
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    
+    <div class="container">
+        <div class="card">
+            <header>
+                <div class="brand">
+                    <div class="brand-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h1>VIGIL SYSTEM</h1>
+                </div>
+                
+                <div class="status-badge {% if event != 'No intrusions yet' %}pulse-alert{% endif %}" style="border-color: {% if event != 'No intrusions yet' %}rgba(239, 68, 68, 0.4){% else %}rgba(6, 182, 212, 0.15){% endif %}; background: {% if event != 'No intrusions yet' %}rgba(239, 68, 68, 0.08){% else %}rgba(6, 182, 212, 0.08){% endif %}; color: {% if event != 'No intrusions yet' %}var(--danger){% endif %}">
+                    <div class="dot"></div>
+                    {% if event != 'No intrusions yet' %}ALERT ACTIVE{% else %}SYSTEM MONITORING{% endif %}
+                </div>
+            </header>
+            
+            <div class="content">
+                <div class="event-box" style="border-color: {% if event != 'No intrusions yet' %}rgba(239, 68, 68, 0.3){% endif %}; background: {% if event != 'No intrusions yet' %}rgba(239, 68, 68, 0.02){% endif %}">
+                    <div class="event-label">Latest Security Event</div>
+                    <div class="event-value {% if event != 'No intrusions yet' %}status-alert{% else %}status-safe{% endif %}">
+                        {{ event }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-info">
+                <div class="info-group">
+                    <span class="info-label">Network Status</span>
+                    <span class="info-value">SECURE / ENCRYPTED</span>
+                </div>
+                <div class="info-group" style="text-align: right;">
+                    <span class="info-label">Node Designation</span>
+                    <span class="info-value">VIGIL-NX77</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

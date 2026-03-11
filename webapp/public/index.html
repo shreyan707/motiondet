@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUELTY SQUAD - CAMERA BROADCAST</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="corner-bubble top-left">
+        <img src="" alt="corner cam" class="corner-feed">
+    </div>
+
+    <header>
+        <div class="logo-container">
+            <h1 class="logo">CAMERA BROADCAST</h1>
+        </div>
+        <nav>
+            <a href="#" class="nav-link white">ESTABLISH LINK</a>
+            <a href="#" class="nav-link white">BIO-LOGS</a>
+            <a href="#" class="nav-link red">TERMINATE</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="camera-container">
+            <!-- Background Feed Image -->
+            <img src="" id="main-feed" alt="Camera Feed">
+            
+            <!-- Overlays -->
+            <div class="overlay rec-tag">REC &bull; [CONNECTED: 107.99.63]</div>
+            <div class="overlay stable-tag">STABILITY: UNSTABLE (66%)</div>
+            <div class="overlay title-splash">CRUELTY SQUAD</div>
+            <div class="overlay bio-scan">
+                <div class="bio-text">? BIO SCAN ACTIVE</div>
+                <div class="bio-dna">xxxxzzxxxx*<br>x*xxx*xxx*xx<br>xzxxxxx*xxxx*</div>
+            </div>
+            <div class="overlay telemetry">
+                FRAME: <span id="frame-count">00921</span><br>
+                TEMP: 38.5&deg;C
+            </div>
+        </div>
+
+        <div class="panels-container">
+            <!-- Panel Left: Organism Status -->
+            <div class="panel organism-status">
+                <h2>ORGANISM STATUS</h2>
+                <div class="status-bars">
+                    <div class="bar-container">
+                        <div class="bar green-bar"></div><span class="pct">76%</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar pink-bar"></div><span class="pct">53%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Center: Terminal Logs -->
+            <div class="panel logs-panel">
+                <p class="log-line">[SYSTEM]: NEURAL LINK ESTABLISHED</p>
+                <p class="log-line">[BIO]: EXCRETION PROCESS INITIATED...</p>
+                <p class="log-line">[SIGNAL]: PACKET LOSS DETECTED IN SECTOR 7</p>
+                <p class="log-line red-log">[!] WARNING: UNKNOWN ENTITY DETECTED</p>
+                <p class="log-line">[SYSTEM]: CALCULATING LIKELIHOOD OF SUCCESS... 0.003%</p>
+            </div>
+
+            <!-- Panel Right: Controls -->
+            <div class="panel controls-panel">
+                <button class="btn" id="btn-zoom-in">ZOOM +</button>
+                <button class="btn" id="btn-zoom-out">ZOOM -</button>
+                <button class="btn" id="btn-thermal">THERMAL</button>
+                <button class="btn" id="btn-night">NIGHT</button>
+            </div>
+        </div>
+    </main>
+    
+    <div class="corner-bubble bottom-right">
+        <img src="" alt="corner cam" class="corner-feed">
+    </div>
+
+    <footer>
+        <span class="footer-left">PROPERTY OF CRUELTY SQUAD CORP. NO RIGHTS RESERVED.</span>
+        <span class="footer-right">LIVE FEED: SYNCHRONIZED</span>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
