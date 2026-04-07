@@ -149,8 +149,8 @@ def detection_loop():
                     timestamp = time.ctime(current_time)
                     last_detection_time = current_time
 
-                    # 1. Start Scorcing Base (Fusion Confidence)
-                    threat_score = 0
+                    # 1. Start Scoring Base (Arduino Fusion Confidence)
+                    threat_score = arduino_conf
                     local_factors = []
 
                     # 2. Night Time Scoring (+30)
@@ -194,10 +194,14 @@ def detection_loop():
                     if not is_authorized:
                         threat_score += 40
                         local_factors.append("UNKNOWN_ENTITY")
+                    else:
+                        # Trust Bonus: Verified faces drastically reduce threat
+                        threat_score -= 60
+                        local_factors.append("AUTHORIZED_USER")
                     
                     # Update global dashboard state
                     global current_score, active_factors
-                    current_score = min(threat_score, 100) # Cap at 100
+                    current_score = max(0, min(threat_score, 100)) # Cap 0-100
                     active_factors = local_factors
 
                     if is_authorized:

@@ -4,8 +4,8 @@ const int TRIG_PIN = 5;
 const int ECHO_PIN = 6;
 const int SOUND_PIN = 7;
 
-const int THRESHOLD = 65;         // Overall confidence threshold
-const int PROXIMITY_LIMIT = 150;  // Detection range (cm)
+const int THRESHOLD = 45;         // Overall confidence threshold
+const int PROXIMITY_LIMIT = 70;  // Detection range (cm)
 
 void setup() {
   pinMode(PIR_PIN, INPUT);
