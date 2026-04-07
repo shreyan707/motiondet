@@ -228,6 +228,17 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
+        .status-badge.alert {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: var(--danger);
+        }
+
+        .event-box.alert {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.02);
+        }
+
         @keyframes text-pulse {
             0% { opacity: 0.8; text-shadow: 0 0 15px var(--danger-glow); }
             100% { opacity: 1; text-shadow: 0 0 30px var(--danger-glow); }
@@ -276,18 +287,40 @@
                     <h1>INTRUSION DETECTION</h1>
                 </div>
                 
-                <div class="status-badge {% if event != 'No intrusions yet' %}pulse-alert{% endif %}" style="border-color: {% if event != 'No intrusions yet' %}rgba(239, 68, 68, 0.4){% else %}rgba(6, 182, 212, 0.15){% endif %}; background: {% if event != 'No intrusions yet' %}rgba(239, 68, 68, 0.08){% else %}rgba(6, 182, 212, 0.08){% endif %}; color: {% if event != 'No intrusions yet' %}var(--danger){% endif %}">
+                <div class="status-badge {% if score >= 60 %}alert pulse-alert{% elif score > 0 %}caution{% endif %}">
                     <div class="dot"></div>
-                    {% if event != 'No intrusions yet' %}ALERT ACTIVE{% else %}SYSTEM MONITORING{% endif %}
+                    {% if score >= 60 %}CRITICAL THREAT{% elif score > 0 %}ELEVATED RISK{% else %}SYSTEM MONITORING{% endif %}
                 </div>
             </header>
             
             <div class="content">
-                <div class="event-box" style="border-color: {% if event != 'No intrusions yet' %}rgba(239, 68, 68, 0.3){% endif %}; background: {% if event != 'No intrusions yet' %}rgba(239, 68, 68, 0.02){% endif %}">
-                    <div class="event-label">Latest Security Event</div>
-                    <div class="event-value {% if event != 'No intrusions yet' %}status-alert{% else %}status-safe{% endif %}">
+                <!-- Threat Meter -->
+                <div class="event-box {% if score >= 60 %}alert{% endif %}" style="padding: 2rem;">
+                    <div class="event-label">Threat Intensity</div>
+                    <div style="font-size: 4rem; font-weight: 800; font-family: 'JetBrains Mono';" class="{% if score >= 60 %}status-alert{% else %}status-safe{% endif %}">
+                        {{ score }}<span style="font-size: 1.5rem; opacity: 0.5;">/100</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 1rem; overflow: hidden;">
+                        <div style="width: {{ score }}%; height: 100%; background: {% if score >= 60 %}var(--danger){% else %}var(--primary){% endif %}; box-shadow: 0 0 15px {% if score >= 60 %}var(--danger-glow){% else %}var(--primary-glow){% endif %}; transition: width 0.5s ease;"></div>
+                    </div>
+                </div>
+
+                <!-- Event Details -->
+                <div class="event-box {% if event != 'No intrusions yet' %}alert{% endif %}" style="padding: 2rem;">
+                    <div class="event-label">Latest Activity</div>
+                    <div class="event-value" style="font-size: 1.2rem; {% if score >= 60 %}color: var(--danger);{% endif %}">
                         {{ event }}
                     </div>
+                    
+                    {% if factors %}
+                    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                        {% for factor in factors %}
+                        <span style="font-size: 0.6rem; padding: 4px 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: var(--text-muted); letter-spacing: 1px;">
+                            {{ factor.replace('_', ' ') }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 

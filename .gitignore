@@ -36,3 +36,5 @@ build/
 .DS_Store
 images/
 motion.py
+debug_ultrasonic/ultrasonic_debug/ultrasonic_debug.ino
+debug_sound/debug_sound.ino
