@@ -445,3 +445,7 @@ MotionDet represents a successful proof-of-concept for an affordable, intelligen
 
 *Report generated for PowerPoint presentation*
 *Project Repository: D:\motiondet\motiondet*
+
+
+module 7 20 m email security
+intrusion detection + viva

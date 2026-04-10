@@ -3,338 +3,860 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIGIL | Security Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>VIGIL | Intelligent Security Operations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         :root {
-            --bg-base: #030712;
-            --surface: rgba(17, 24, 39, 0.7);
-            --primary: #06b6d4;
-            --primary-glow: rgba(6, 182, 212, 0.4);
-            --danger: #ef4444;
-            --danger-glow: rgba(239, 68, 68, 0.4);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: rgba(255, 255, 255, 0.08);
+            --clay:       #454040;
+            --warm-stone: #605B51;
+            --citron:     #D8D365;
+            --lime:       #E6F082;
+
+            --bg:         #2a2725;
+            --surface:    rgba(69, 64, 64, 0.7);
+            --surface-2:  rgba(96, 91, 81, 0.4);
+            --border:     rgba(216, 211, 101, 0.12);
+            --border-hi:  rgba(216, 211, 101, 0.35);
+            --text:       #f0ece4;
+            --text-muted: rgba(240, 236, 228, 0.45);
+            --text-dim:   rgba(240, 236, 228, 0.7);
+
+            --safe:    #4ade80;
+            --warn:    #facc15;
+            --danger:  #f87171;
+            --critical:#dc2626;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            background-color: var(--bg-base);
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.06), transparent 30%),
-                radial-gradient(circle at 85% 30%, rgba(239, 68, 68, 0.04), transparent 30%);
-            color: var(--text-main);
             font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Abstract Grid */
-        .grid-overlay {
-            position: absolute;
+        /* ── NOISE TEXTURE ── */
+        body::before {
+            content: '';
+            position: fixed;
             inset: 0;
-            background-size: 40px 40px;
-            background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-            z-index: 1;
+            background-image:
+                radial-gradient(ellipse at 15% 30%, rgba(96,91,81,0.25) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 70%, rgba(216,211,101,0.06) 0%, transparent 50%);
             pointer-events: none;
+            z-index: 0;
         }
 
-        .container {
-            width: 100%;
-            max-width: 900px;
-            padding: 2rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        .card {
-            background: var(--surface);
+        /* ── HEADER ── */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 64px;
+            background: rgba(42, 39, 37, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 3.5rem;
-            box-shadow: 
-                0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                inset 0 1px 1px rgba(255, 255, 255, 0.05);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, transparent, var(--primary), var(--danger), transparent);
-            opacity: 0.8;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3.5rem;
-            padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--border);
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
-        .brand-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(6, 182, 212, 0.1);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            border-radius: 12px;
+        .brand-mark {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--citron), var(--lime));
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 0 20px rgba(230,240,130,0.2);
+            flex-shrink: 0;
+        }
+
+        .brand-mark svg { color: var(--clay); width: 18px; height: 18px; }
+
+        .brand-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: var(--lime);
+            text-shadow: 0 0 20px rgba(230,240,130,0.3);
+        }
+
+        .brand-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+
+        .header-right {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow);
+            gap: 1.5rem;
         }
 
-        .brand-icon svg {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-            stroke-width: 2;
-            fill: none;
-        }
-
-        h1 {
-            font-size: 1.75rem;
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-hi);
+            background: rgba(96,91,81,0.3);
+            font-size: 0.75rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: 1.5px;
+            color: var(--lime);
         }
 
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(6, 182, 212, 0.08);
-            border: 1px solid rgba(6, 182, 212, 0.15);
-            padding: 8px 18px;
-            border-radius: 100px;
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--safe);
+            box-shadow: 0 0 8px var(--safe);
+            animation: breathe 2s ease-in-out infinite;
+        }
+
+        .live-dot.alert-state {
+            background: var(--danger);
+            box-shadow: 0 0 12px var(--danger);
+            animation: urgentPulse 0.8s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%,100% { transform: scale(1); opacity:1; }
+            50%      { transform: scale(1.3); opacity:0.7; }
+        }
+
+        @keyframes urgentPulse {
+            0%,100% { transform: scale(1); box-shadow: 0 0 8px var(--danger); }
+            50%      { transform: scale(1.4); box-shadow: 0 0 20px var(--danger); }
+        }
+
+        .clock {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
-            color: var(--primary);
-            letter-spacing: 0.5px;
-            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 1px;
         }
 
-        .dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--primary-glow);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.6); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(6, 182, 212, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
-        }
-
-        .content {
+        /* ── LAYOUT ── */
+        .page {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            max-width: 1440px;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
+            grid-template-columns: 1fr 380px;
+            grid-template-rows: auto;
+            gap: 1.5rem;
         }
 
-        .event-box {
-            background: rgba(0, 0, 0, 0.2);
+        .col-main { display: flex; flex-direction: column; gap: 1.5rem; }
+        .col-side { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 3rem;
-            text-align: center;
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .event-box::after {
-            content: '';
+        .card:hover { border-color: var(--border-hi); }
+
+        .card-accent {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--citron), var(--lime), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover .card-accent { opacity: 1; }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--citron);
+        }
+
+        .card-label svg { width: 14px; height: 14px; }
+
+        .card-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ── CAMERA FEED ── */
+        .camera-wrap {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #1a1817;
+            aspect-ratio: 16/9;
+        }
+
+        .camera-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.2s;
+        }
+
+        .cam-overlay {
+            position: absolute;
+            inset: 0;
             pointer-events: none;
         }
 
-        .event-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
+        /* corner brackets */
+        .cam-corner {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-color: var(--citron);
+            border-style: solid;
+            opacity: 0.7;
         }
+        .cam-corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+        .cam-corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+        .cam-corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+        .cam-corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
 
-        .event-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 2.2rem;
-            font-weight: 700;
-        }
-
-        /* Jinja conditional styling logic via template classes */
-        .status-safe {
-            color: var(--primary);
-            text-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .status-alert {
-            color: var(--danger);
-            text-shadow: 0 0 20px var(--danger-glow);
-            animation: text-pulse 3s infinite alternate;
-        }
-        
-        .pulse-alert .dot {
-            background-color: var(--danger);
-            box-shadow: 0 0 8px var(--danger-glow);
-            animation: alert-pulse 1s infinite !important;
-        }
-        
-        @keyframes alert-pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        .status-badge.alert {
-            background: rgba(239, 68, 68, 0.08);
-            border-color: rgba(239, 68, 68, 0.4);
-            color: var(--danger);
-        }
-
-        .event-box.alert {
-            border-color: rgba(239, 68, 68, 0.3);
-            background: rgba(239, 68, 68, 0.02);
-        }
-
-        @keyframes text-pulse {
-            0% { opacity: 0.8; text-shadow: 0 0 15px var(--danger-glow); }
-            100% { opacity: 1; text-shadow: 0 0 30px var(--danger-glow); }
-        }
-
-        .footer-info {
+        .cam-badge {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            justify-content: space-between;
-            margin-top: 3.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .info-group {
-            display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 6px;
+            padding: 4px 12px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(216,211,101,0.25);
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--lime);
         }
 
-        .info-label {
+        .cam-fps {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.5);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* ── THREAT SCORE ── */
+        .score-display {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .score-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            transition: color 0.5s ease, text-shadow 0.5s ease;
+            color: var(--lime);
+            text-shadow: 0 0 30px rgba(230,240,130,0.3);
+        }
+
+        .score-denom {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .score-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            transition: all 0.4s ease;
+            background: rgba(74,222,128,0.12);
+            border: 1px solid rgba(74,222,128,0.3);
+            color: var(--safe);
+        }
+
+        .score-label.warn  { background: rgba(250,204,21,0.12); border-color: rgba(250,204,21,0.3); color: var(--warn); }
+        .score-label.alert { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.3); color: var(--danger); }
+        .score-label.crit  { background: rgba(220,38,38,0.12); border-color: rgba(220,38,38,0.5); color: var(--critical); animation: criticalPulse 1.2s ease-in-out infinite; }
+
+        @keyframes criticalPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); }
+            50%      { box-shadow: 0 0 0 6px rgba(220,38,38,0.1); }
+        }
+
+        /* segmented bar */
+        .seg-bar {
+            display: flex;
+            gap: 3px;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .seg {
+            flex: 1;
+            border-radius: 3px;
+            background: var(--surface-2);
+            transition: background 0.4s ease;
+        }
+
+        .seg.lit-safe   { background: var(--safe); }
+        .seg.lit-warn   { background: var(--warn); }
+        .seg.lit-danger { background: var(--danger); }
+        .seg.lit-crit   { background: var(--critical); }
+
+        /* ── STATS STRIP ── */
+        .stats-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .stat-item {
+            background: var(--surface-2);
+            padding: 1rem 1.25rem;
+            text-align: center;
+            transition: background 0.2s ease;
+        }
+
+        .stat-item:hover { background: rgba(96,91,81,0.6); }
+
+        .stat-n {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--lime);
+            line-height: 1;
+        }
+
+        .stat-lbl {
             font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            opacity: 0.5;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
-        
-        .info-value {
-            color: #cbd5e1;
+
+        /* ── EVENT LOG ── */
+        .event-area {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            min-height: 80px;
+            color: var(--text-dim);
+            border-left: 3px solid var(--citron);
+            transition: border-left-color 0.4s ease;
+        }
+
+        .event-area.is-alert { border-left-color: var(--danger); color: var(--text); }
+
+        .event-ts {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ── FACTORS ── */
+        .factor-list { display: flex; flex-direction: column; gap: 8px; }
+
+        .factor-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            opacity: 0.4;
+        }
+
+        .factor-row.active {
+            opacity: 1;
+        }
+
+        .factor-row svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+        .factor-row.NIGHT_TIME         { background: rgba(96,91,81,0.25); border-color: rgba(96,91,81,0.5); color: #c4b8a0; }
+        .factor-row.NEAR_BOUNDARY      { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.3); color: var(--danger); }
+        .factor-row.FAST_MOVEMENT_LATERAL,
+        .factor-row.FAST_MOVEMENT_APPROACH { background: rgba(250,204,21,0.08); border-color: rgba(250,204,21,0.3); color: var(--warn); }
+        .factor-row.UNKNOWN_ENTITY     { background: rgba(220,38,38,0.1); border-color: rgba(220,38,38,0.4); color: var(--critical); }
+        .factor-row.AUTHORIZED_USER    { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.3); color: var(--safe); }
+
+        .factor-badge-val {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.25);
+        }
+
+        /* ── SYSTEM INFO ── */
+        .info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+        .info-key { color: var(--text-muted); display: flex; align-items: center; gap: 7px; }
+        .info-key svg { width: 13px; height: 13px; color: var(--warm-stone); }
+        .info-val { font-family: 'JetBrains Mono', monospace; color: var(--lime); font-size: 0.75rem; }
+        .info-val.dot-online::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--safe); margin-right: 6px; box-shadow: 0 0 6px var(--safe); }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--warm-stone); border-radius: 5px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1100px) {
+            .page { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            .page { padding: 1rem; }
+            .header { padding: 0 1rem; }
+            .score-number { font-size: 3.5rem; }
+            .stats-strip { grid-template-columns: 1fr; }
         }
     </style>
-    <meta http-equiv="refresh" content="5">
 </head>
 <body>
-    <div class="grid-overlay"></div>
-    
-    <div class="container">
-        <div class="card">
-            <header>
-                <div class="brand">
-                    <div class="brand-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                    </div>
-                    <h1>INTRUSION DETECTION</h1>
-                </div>
-                
-                <div class="status-badge {% if score >= 60 %}alert pulse-alert{% elif score > 0 %}caution{% endif %}">
-                    <div class="dot"></div>
-                    {% if score >= 60 %}CRITICAL THREAT{% elif score > 0 %}ELEVATED RISK{% else %}SYSTEM MONITORING{% endif %}
-                </div>
-            </header>
-            
-            <div class="content">
-                <!-- Threat Meter -->
-                <div class="event-box {% if score >= 60 %}alert{% endif %}" style="padding: 2rem;">
-                    <div class="event-label">Threat Intensity</div>
-                    <div style="font-size: 4rem; font-weight: 800; font-family: 'JetBrains Mono';" class="{% if score >= 60 %}status-alert{% else %}status-safe{% endif %}">
-                        {{ score }}<span style="font-size: 1.5rem; opacity: 0.5;">/100</span>
-                    </div>
-                    <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 1rem; overflow: hidden;">
-                        <div style="width: {{ score }}%; height: 100%; background: {% if score >= 60 %}var(--danger){% else %}var(--primary){% endif %}; box-shadow: 0 0 15px {% if score >= 60 %}var(--danger-glow){% else %}var(--primary-glow){% endif %}; transition: width 0.5s ease;"></div>
-                    </div>
-                </div>
 
-                <!-- Event Details -->
-                <div class="event-box {% if event != 'No intrusions yet' %}alert{% endif %}" style="padding: 2rem;">
-                    <div class="event-label">Latest Activity</div>
-                    <div class="event-value" style="font-size: 1.2rem; {% if score >= 60 %}color: var(--danger);{% endif %}">
-                        {{ event }}
+<!-- HEADER -->
+<header class="header">
+    <div class="brand">
+        <div class="brand-mark">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+            <div class="brand-name">VIGIL</div>
+            <div class="brand-sub">Threat Intelligence</div>
+        </div>
+    </div>
+
+    <div class="header-right">
+        <div class="live-badge">
+            <div class="live-dot" id="liveDot"></div>
+            <span id="sysStatus">MONITORING</span>
+        </div>
+        <div class="clock" id="clock">--:--:--</div>
+    </div>
+</header>
+
+<!-- PAGE -->
+<main class="page">
+
+    <!-- ── MAIN COLUMN ── -->
+    <div class="col-main">
+
+        <!-- CAMERA -->
+        <div class="card">
+            <div class="card-accent"></div>
+            <div class="card-head">
+                <div class="card-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    Live Feed
+                </div>
+                <div class="card-meta" id="camTime">--:--:--</div>
+            </div>
+            <div class="camera-wrap">
+                <img id="snapshot" src="/api/snapshot" alt="VIGIL Camera Feed">
+                <div class="cam-overlay">
+                    <div class="cam-corner tl"></div>
+                    <div class="cam-corner tr"></div>
+                    <div class="cam-corner bl"></div>
+                    <div class="cam-corner br"></div>
+                    <div class="cam-badge" id="camBadge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                        LIVE
                     </div>
-                    
-                    {% if factors %}
-                    <div style="display: flex; gap: 8px; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
-                        {% for factor in factors %}
-                        <span style="font-size: 0.6rem; padding: 4px 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: var(--text-muted); letter-spacing: 1px;">
-                            {{ factor.replace('_', ' ') }}
-                        </span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+                </div>
+                <div class="cam-fps" id="fpsDisplay">-- FPS</div>
+            </div>
+        </div>
+
+        <!-- STATS + EVENTS -->
+        <div class="card">
+            <div class="card-accent"></div>
+            <div class="card-head">
+                <div class="card-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Session Metrics
                 </div>
             </div>
 
-            <div class="footer-info">
-                <div class="info-group">
-                    <span class="info-label">Network Status</span>
-                    <span class="info-value">SECURE / ENCRYPTED</span>
+            <div class="stats-strip" style="margin-bottom: 1.5rem;">
+                <div class="stat-item">
+                    <div class="stat-n" id="statDetections">{{ detections }}</div>
+                    <div class="stat-lbl">Detections</div>
                 </div>
-                <div class="info-group" style="text-align: right;">
-                    <span class="info-label">Node Designation</span>
-                    <span class="info-value">INTR-NX77</span>
+                <div class="stat-item">
+                    <div class="stat-n" id="statAlerts">{{ alerts }}</div>
+                    <div class="stat-lbl">Alerts Sent</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-n" id="statScore">{{ score }}</div>
+                    <div class="stat-lbl">Threat Score</div>
+                </div>
+            </div>
+
+            <div class="card-label" style="margin-bottom: 12px;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Latest Event
+            </div>
+            <div class="event-area" id="eventArea">
+                <span class="event-ts" id="eventTs">Waiting for first detection...</span>
+                <span id="eventText">{{ event }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── SIDE COLUMN ── -->
+    <div class="col-side">
+
+        <!-- THREAT SCORE -->
+        <div class="card">
+            <div class="card-accent"></div>
+            <div class="card-head">
+                <div class="card-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Threat Score
+                </div>
+                <div id="scoreLabel" class="score-label">SAFE</div>
+            </div>
+
+            <div class="score-display">
+                <div class="score-number" id="scoreNumber">{{ score }}</div>
+                <div class="score-denom">/100</div>
+            </div>
+
+            <div class="seg-bar" id="segBar">
+                {% for i in range(20) %}
+                <div class="seg" id="seg-{{ i }}"></div>
+                {% endfor %}
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                <span style="font-size:0.65rem; color:var(--text-muted); letter-spacing:1px;">SAFE</span>
+                <span style="font-size:0.65rem; color:var(--text-muted); letter-spacing:1px;">CRITICAL</span>
+            </div>
+        </div>
+
+        <!-- ACTIVE FACTORS -->
+        <div class="card" style="flex:1;">
+            <div class="card-accent"></div>
+            <div class="card-head">
+                <div class="card-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Detection Factors
+                </div>
+                <div class="card-meta" id="activeFactorCount">0 active</div>
+            </div>
+            <div class="factor-list" id="factorList">
+                <!-- rendered by JS -->
+            </div>
+        </div>
+
+        <!-- SYSTEM INFO -->
+        <div class="card">
+            <div class="card-accent"></div>
+            <div class="card-head">
+                <div class="card-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    System Info
+                </div>
+            </div>
+            <div>
+                <div class="info-row">
+                    <span class="info-key">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Uptime
+                    </span>
+                    <span class="info-val" id="uptime">00:00:00</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Arduino
+                    </span>
+                    <span class="info-val dot-online">COM8</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Face DB
+                    </span>
+                    <span class="info-val dot-online">1 Known</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Model
+                    </span>
+                    <span class="info-val">MobileNetSSD</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-key">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                        Alert Threshold
+                    </span>
+                    <span class="info-val">60 pts</span>
                 </div>
             </div>
         </div>
+
     </div>
+</main>
+
+<script>
+    // ── CONFIG ──────────────────────────────────────────────────────────────
+    const POLL_INTERVAL = 2000;   // status API
+    const FRAME_INTERVAL = 1000; // camera frame
+
+    const FACTOR_CONFIG = {
+        NIGHT_TIME:              { label:'Night Time',          weight:'+30', icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>` },
+        NEAR_BOUNDARY:           { label:'Near Boundary',       weight:'+25', icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>` },
+        FAST_MOVEMENT_LATERAL:   { label:'Fast Movement',       weight:'+20', icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>` },
+        FAST_MOVEMENT_APPROACH:  { label:'Rapid Approach',      weight:'+20', icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>` },
+        UNKNOWN_ENTITY:          { label:'Unknown Entity',      weight:'+40', icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>` },
+        AUTHORIZED_USER:         { label:'Authorized User',     weight:'-60', icon:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>` },
+    };
+
+    // all possible factors in display order
+    const ALL_FACTORS = ['NIGHT_TIME','NEAR_BOUNDARY','FAST_MOVEMENT_LATERAL','FAST_MOVEMENT_APPROACH','UNKNOWN_ENTITY','AUTHORIZED_USER'];
+
+    // ── STATE ───────────────────────────────────────────────────────────────
+    let startTime = Date.now();
+    let frameCount = 0;
+    let lastFpsTime = Date.now();
+    let currentFps = 0;
+
+    // ── HELPERS ─────────────────────────────────────────────────────────────
+    function pad(n) { return String(n).padStart(2,'0'); }
+
+    function formatTime(d) {
+        return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    function scoreClass(s) {
+        if (s >= 80) return 'crit';
+        if (s >= 60) return 'alert';
+        if (s >= 35) return 'warn';
+        return '';
+    }
+
+    function scoreLabel(s) {
+        if (s >= 80) return 'CRITICAL';
+        if (s >= 60) return 'HIGH RISK';
+        if (s >= 35) return 'ELEVATED';
+        if (s > 0)   return 'LOW RISK';
+        return 'SAFE';
+    }
+
+    function scoreColor(s) {
+        if (s >= 80) return 'var(--critical)';
+        if (s >= 60) return 'var(--danger)';
+        if (s >= 35) return 'var(--warn)';
+        return 'var(--safe)';
+    }
+
+    // ── CLOCK ───────────────────────────────────────────────────────────────
+    function tickClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent = formatTime(now);
+        document.getElementById('camTime').textContent = formatTime(now);
+
+        // uptime
+        const ms = Date.now() - startTime;
+        const h = Math.floor(ms/3600000);
+        const m = Math.floor((ms%3600000)/60000);
+        const s = Math.floor((ms%60000)/1000);
+        document.getElementById('uptime').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+    }
+
+    setInterval(tickClock, 1000);
+    tickClock();
+
+    // ── SEGMENT BAR ─────────────────────────────────────────────────────────
+    function updateSegBar(score) {
+        const active = Math.round((score / 100) * 20);
+        for (let i = 0; i < 20; i++) {
+            const el = document.getElementById(`seg-${i}`);
+            if (!el) continue;
+            el.className = 'seg';
+            if (i < active) {
+                const pct = ((i+1)/20)*100;
+                if (pct <= 35)      el.classList.add('lit-safe');
+                else if (pct <= 60) el.classList.add('lit-warn');
+                else if (pct <= 80) el.classList.add('lit-danger');
+                else                el.classList.add('lit-crit');
+            }
+        }
+    }
+
+    // ── FACTOR LIST ─────────────────────────────────────────────────────────
+    function renderFactors(activeFactors) {
+        const list = document.getElementById('factorList');
+        const countEl = document.getElementById('activeFactorCount');
+        const activeSet = new Set(activeFactors);
+
+        list.innerHTML = ALL_FACTORS.map(key => {
+            const cfg = FACTOR_CONFIG[key] || { label: key, weight:'', icon:'' };
+            const isActive = activeSet.has(key);
+            return `<div class="factor-row ${key} ${isActive ? 'active' : ''}">
+                        ${cfg.icon}
+                        <span>${cfg.label}</span>
+                        <span class="factor-badge-val">${cfg.weight}</span>
+                    </div>`;
+        }).join('');
+
+        countEl.textContent = `${activeFactors.length} active`;
+    }
+
+    // ── STATUS POLL ─────────────────────────────────────────────────────────
+    function pollStatus() {
+        fetch('/api/status')
+            .then(r => r.json())
+            .then(data => {
+                const score = data.score || 0;
+                const isAlert = score >= 60;
+
+                // live dot
+                const dot = document.getElementById('liveDot');
+                const sysStatus = document.getElementById('sysStatus');
+                dot.className = isAlert ? 'live-dot alert-state' : 'live-dot';
+                sysStatus.textContent = data.status === 'ACTIVE'
+                    ? (isAlert ? 'ALERT' : 'MONITORING')
+                    : (data.status || 'OFFLINE');
+
+                // stats
+                document.getElementById('statDetections').textContent = data.detections || 0;
+                document.getElementById('statAlerts').textContent     = data.alerts     || 0;
+                document.getElementById('statScore').textContent      = score;
+
+                // score card
+                const scoreEl   = document.getElementById('scoreNumber');
+                const labelEl   = document.getElementById('scoreLabel');
+                scoreEl.textContent = score;
+                scoreEl.style.color       = scoreColor(score);
+                scoreEl.style.textShadow  = `0 0 30px ${scoreColor(score)}55`;
+                labelEl.textContent = scoreLabel(score);
+                labelEl.className   = `score-label ${scoreClass(score)}`;
+
+                updateSegBar(score);
+
+                // event
+                const eventArea = document.getElementById('eventArea');
+                const eventTs   = document.getElementById('eventTs');
+                const eventText = document.getElementById('eventText');
+
+                const now = formatTime(new Date());
+                eventTs.textContent = now;
+                eventText.textContent = data.event || 'No recent activity';
+                eventArea.className = isAlert ? 'event-area is-alert' : 'event-area';
+
+                // factors
+                renderFactors(data.factors || []);
+            })
+            .catch(() => {
+                document.getElementById('sysStatus').textContent = 'OFFLINE';
+                document.getElementById('liveDot').classList.add('alert-state');
+            });
+    }
+
+    // ── CAMERA ──────────────────────────────────────────────────────────────
+    function refreshFrame() {
+        const img = document.getElementById('snapshot');
+        img.src = `/api/snapshot?t=${Date.now()}`;
+        frameCount++;
+
+        const now = Date.now();
+        if (now - lastFpsTime >= 1000) {
+            currentFps = frameCount;
+            frameCount = 0;
+            lastFpsTime = now;
+            document.getElementById('fpsDisplay').textContent = `${currentFps} FPS`;
+        }
+    }
+
+    // ── INIT ────────────────────────────────────────────────────────────────
+    renderFactors([]);
+    updateSegBar({{ score }});
+    pollStatus();
+    setInterval(pollStatus, POLL_INTERVAL);
+    setInterval(refreshFrame, FRAME_INTERVAL);
+</script>
 </body>
 </html>
