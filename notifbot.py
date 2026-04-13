@@ -24,8 +24,8 @@ from flask import Flask, render_template, jsonify
 # ============================================================================
 
 # Telegram Bot Settings
-BOT_TOKEN = "8686246587:AAH0uA17Cv5bOZ3rGu39nDmRyPbipOymqX8"
-CHAT_ID = "6406796423"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 # Arduino Serial Connection
 ARDUINO_PORT = 'COM8'
